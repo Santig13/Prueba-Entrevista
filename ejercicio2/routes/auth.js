@@ -5,37 +5,34 @@ const { validateLogIn, validateUser } = require('../schemas/users');
 function createAuthRouter(pool, sessionMiddleware) {
     const router = Router();
 
-    router.use(sessionMiddleware); // Usar el middleware de sesión
+    router.use(sessionMiddleware);
 
-    // Ruta login
     router.post('/login', validateLogIn, async (req, res, next) => {
         const { email, password } = req.body;
-        pool.getConnection((err, connection) => {
-            if (err) return next(err);
-            
-            connection.query('SELECT * FROM usuarios WHERE email = ?', [email], async (err, rows) => {
-                connection.release();
-                if (err) return next(err);
+        try {
+            const connection = await pool.getConnection();
+            const [rows] = await connection.query('SELECT * FROM usuarios WHERE email = ?', [email]);
+            connection.release();
 
-                if (rows.length > 0) {
-                    const user = rows[0];
-                    const isMatch = await bcrypt.compare(password, user.password);
-                    const { password: _, ...userWithoutPassword } = user;
+            if (rows.length > 0) {
+                const user = rows[0];
+                const isMatch = await bcrypt.compare(password, user.password);
+                const { password: _, ...userWithoutPassword } = user;
 
-                    if (isMatch) {
-                        req.session.user = userWithoutPassword;
-                        res.redirect('/dashboard');
-                    } else {
-                        res.status(400).send('Email o contraseña incorrectos');
-                    }
+                if (isMatch) {
+                    req.session.user = userWithoutPassword;
+                    res.redirect('/dashboard');
                 } else {
                     res.status(400).send('Email o contraseña incorrectos');
                 }
-            });
-        });
+            } else {
+                res.status(400).send('Email o contraseña incorrectos');
+            }
+        } catch (err) {
+            next(err);
+        }
     });
 
-    // Ruta logout
     router.post('/logout', (req, res) => {
         req.session.destroy(err => {
             if (err) return res.status(500).send('Error al cerrar sesión');
@@ -43,50 +40,28 @@ function createAuthRouter(pool, sessionMiddleware) {
         });
     });
 
-    // Ruta registro
     router.post('/register', validateUser, async (req, res, next) => {
-        const {nombre, email, telefonoCompleto,facultad,rol, password}=req.body;
-        const hashedPassword = await bcrypt.hash(password, 10); // hash password 10 salt rounds
+        const { nombre, email, telefonoCompleto, facultad, rol, password } = req.body;
+        try {
+            const hashedPassword = await bcrypt.hash(password, 10);
+            const connection = await pool.getConnection();
 
-        const consultaINSERTuser = 'INSERT INTO usuarios(nombre,email,telefono,facultad_id,rol,accesibilidad_id,password) VALUES(?,?,?,?,?,?,?)';
-        const consultaSELECTfacultad = 'SELECT id FROM facultades WHERE nombre=?';
-        const consultaINSERTfacultad = 'INSERT INTO facultades(nombre) VALUES(?)';
+            const [facultadRows] = await connection.query('SELECT id FROM facultades WHERE nombre = ?', [facultad]);
+            let facultad_id;
 
-        function insertarUsuario(connection, facultad_id) {
-            connection.query(consultaINSERTuser, [nombre, email, telefonoCompleto, facultad_id,rol,1, hashedPassword], (err, rows) => {
-                connection.release();
-                if (err) return next(err);
-                res.redirect('/?success=true');
-            });
+            if (facultadRows.length > 0) {
+                facultad_id = facultadRows[0].id;
+            } else {
+                const [result] = await connection.query('INSERT INTO facultades(nombre) VALUES(?)', [facultad]);
+                facultad_id = result.insertId;
+            }
+
+            await connection.query('INSERT INTO usuarios(nombre, email, telefono, facultad_id, rol, accesibilidad_id, password) VALUES(?, ?, ?, ?, ?, ?, ?)', [nombre, email, telefonoCompleto, facultad_id, rol, 1, hashedPassword]);
+            connection.release();
+            res.redirect('/?success=true');
+        } catch (err) {
+            next(err);
         }
-
-        pool.getConnection((err, connection) => {
-            if (err) return next(err);
-
-            connection.query(consultaSELECTfacultad, [facultad], (err, rows) => {
-                if (err) {
-                    connection.release();
-                    return next(err);
-                }
-
-                let facultad_id;
-                if (rows.length > 0) {
-                    facultad_id = rows[0].id;
-                    insertarUsuario(connection, facultad_id);
-                } else {
-                    connection.query(consultaINSERTfacultad, [facultad], (err, result) => {
-                        if (err) {
-                            connection.release();
-                            return next(err);
-                        }
-                        facultad_id = result.insertId;
-                        insertarUsuario(connection, facultad_id);
-                    });
-                }
-            });
-
-            
-        });
     });
 
     return router;
