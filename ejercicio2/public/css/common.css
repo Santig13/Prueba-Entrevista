@@ -1,0 +1,212 @@
+body {
+    background-color: #071014;
+    background-image: linear-gradient(160deg, #071014 0%, #0db8de 100%);
+    font-family: 'Arial', sans-serif;
+    color: #ECF0F5;
+    min-height: 100vh;
+}
+
+header, .footer-nuestro ,.navbar{
+    background: #1A2226;
+    text-align: center;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+}
+
+.blue-text {
+    color: #0DB8DE;
+}
+
+.dark-box {
+    background: #1A2226;
+    text-align: center;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+    border-radius: 15px;
+}
+
+.form-title {
+    font-size: 30px;
+    letter-spacing: 2px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    font-weight: bold;
+    color: #0DB8DE;
+}
+
+.form-control {
+    background-color: #1A2226;
+    border: none;
+    border-bottom: 2px solid #0DB8DE;
+    border-radius: 0;
+    padding-left: 0;
+    color: #ECF0F5;
+    margin-bottom: 20px;
+
+}
+
+.form-control:focus {
+    box-shadow: none;
+    background-color: #1A2226;
+    color: #ECF0F5;
+}
+
+.form-label {
+    font-size: 15px;
+    color: #B0B0B0;
+    letter-spacing: 1px;
+}
+
+/* Estilo para el <select> */
+.form-select {
+    background-color: #1A2226;
+    border: none;
+    border-bottom: 2px solid #0DB8DE;
+    color: #ECF0F5;
+    padding: 0.5em;
+}
+
+.form-select:focus {
+    box-shadow: none;
+    border-color: #0DB8DE;
+    background-color: #1A2226;
+    color: #ECF0F5;
+}
+
+
+
+.btn-outline-primary {
+    border-radius: 15px;
+    cursor: pointer;
+    border-color: #0DB8DE !important;
+    color: #0DB8DE;
+}
+
+.btn-outline-primary:hover {
+    background-image: linear-gradient(160deg, #071014 0%, #0db8de 100%) !important;
+    color: #ffffff !important;
+}
+
+span {
+    color: #B0B0B0;
+}
+
+a {
+    color: #0DB8DE;
+    text-decoration: none;
+}
+
+a:hover {
+    color: #2d77c2;
+}
+
+/* Estilos personalizados para el toast */
+.custom-toast {
+    background-color: #1A2226; /* Fondo oscuro como el de otros componentes */
+    color: #ECF0F5; /* Color del texto claro */
+    border-radius: 20px; /* Bordes completamente redondeados */
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23); /* Sombra para dar profundidad */
+
+}
+
+.toast-header {
+    background-color: #0DB8DE; /* Encabezado con color azul */
+    color: #fff; /* Texto blanco en el encabezado */
+
+}
+
+.toast-body {
+    background-color: #1A2226; /* Fondo oscuro */
+    color: #ECF0F5; /* Texto claro */
+    font-size: 16px; /* Tamaño de fuente adecuado */
+    text-align: center; /* Texto centrado */
+    border-radius: 5px;
+}
+
+/* Estilos para nav-links */
+.nav-link {
+    color: #0DB8DE; /* Azul como el título del header del login */
+    font-weight: bold;
+    transition: color 0.3s ease;
+}
+
+.nav-link:hover {
+    color: #2d77c2; /* Azul más oscuro para hover */
+    transform: scale(1.1);
+}
+
+/* Estilos para el span del navbar (texto) */
+#texto-navbar {
+    color: #0DB8DE; /* Azul como el título del header */
+    font-weight: bold;
+}
+
+/* Estilos para los botones de perfil y notificaciones en la navbar */
+.navbar-buttons {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+}
+
+.navbar-button {
+    background: transparent;
+    border: none;
+    margin-left: 15px;
+    cursor: pointer;
+    padding: 0;
+}
+
+.navbar-button img {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    transition: transform 0.2s ease;
+}
+
+.navbar-button:hover img {
+    transform: scale(1.1);
+}
+
+    
+.card {
+    background-color: #1A2226; /* Fondo oscuro */
+    border: 1px solid #0DB8DE; /* Borde azul */
+    border-radius: 15px; /* Más redondeado */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: box-shadow 0.3s ease-in-out;
+}
+
+.card:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.card-title {
+    color: #ECF0F5; /* Texto claro */
+}
+
+.card-text {
+    color: #B0B0B0; /* Texto gris claro */
+}
+
+.card-footer {
+    background-color: #1A2226; /* Fondo oscuro */
+    border-top: 1px solid #0DB8DE; /* Borde azul */
+    border-radius: 20px; /* Más redondeado */
+}
+
+.text-muted {
+    color: #6c757d !important;
+}
+
+
+.modal-content {
+    background-color: #f8f9fa;
+    border-radius: 10px;
+}
+.modal-header {
+    border-bottom: 1px solid #dee2e6;
+}
+.modal-body, .modal-header {
+    color: #212529;
+}
+.modal-footer {
+    border-top: 1px solid #dee2e6;
+}

@@ -1,0 +1,44 @@
+<%- include("partials/header.ejs", { user: user }) %>
+
+<div class="container mt-5" style="overflow-y: auto; max-height: 75vh;">
+    <h1 class="mb-4">Lista de Eventos</h1>
+    <% eventos.forEach(evento => { %>
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title"><%= evento.titulo %></h5>
+                        <p class="card-text"><strong>Descripción:</strong> <%= evento.descripcion %></p>
+                        <p class="card-text"><strong>Fecha:</strong> <%= new Date(evento.fecha).toLocaleDateString() %></p>
+                        <p class="card-text"><strong>Hora:</strong> <%= evento.hora %></p>
+                        <p class="card-text"><strong>Ubicación:</strong> <%= evento.ubicacion %></p>
+                        <p class="card-text"><strong>Capacidad Máxima:</strong> <%= evento.capacidad_maxima %></p>
+                        <p class="card-text"><strong>Organizador ID:</strong> <%= evento.organizador_id %></p>
+                    </div>
+                    <div class="card-footer m-1">
+                        <small class="text-muted mx-2">ID del Evento: <%= evento.id %></small>
+                        <button class="btn btn-outline-primary btn-event participante">Apuntarse</button>
+                        <button class="btn btn-outline-primary btn-event organizador">Editar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    <% }) %>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const userRole = "<%= user.rol %>";
+        const buttons = document.querySelectorAll(".btn-event");
+
+        buttons.forEach(button => {
+            if (button.classList.contains(userRole)) {
+                button.style.display = "inline-block";
+            } else {
+                button.style.display = "none";
+            }
+        });
+    });
+</script>
+
+<%- include("partials/footer.ejs") %>

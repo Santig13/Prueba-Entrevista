@@ -1,0 +1,24 @@
+{
+  "name": "proyectoaw",
+  "version": "1.0.0",
+  "description": "",
+  "main": "Inicio.js",
+  "scripts": {
+    "start": "nodemon app.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "ejs": "^3.1.10",
+    "express": "^4.21.1",
+    "mysql": "^2.18.1",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "bcrypt": "^5.1.1",
+    "express-mysql-session": "^3.0.3",
+    "express-session": "^1.18.1",
+    "nodemon": "^3.1.7"
+  }
+}
