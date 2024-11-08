@@ -3,6 +3,7 @@ document.addEventListener('DOMContentLoaded', async function(params) {
     try {
         const respuesta = await fetch('/facultades');
         const data = await respuesta.json();
+        console.log(data);
         const facultadSelect = document.getElementById('facultad');
         data.forEach(facultad => {
             const option = document.createElement('option');

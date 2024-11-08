@@ -1,34 +1,77 @@
 <%- include("partials/header.ejs", { user: user }) %>
-
-<div class="container mt-5" style="overflow-y: auto; max-height: 75vh;">
-    <h1 class="mb-4">Lista de Eventos</h1>
-    <% eventos.forEach(evento => { %>
-        <div class="row mb-4">
-            <div class="col-12">
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title"><%= evento.titulo %></h5>
-                        <p class="card-text"><strong>Descripción:</strong> <%= evento.descripcion %></p>
-                        <p class="card-text"><strong>Fecha:</strong> <%= new Date(evento.fecha).toLocaleDateString() %></p>
-                        <p class="card-text"><strong>Hora:</strong> <%= evento.hora %></p>
-                        <p class="card-text"><strong>Ubicación:</strong> <%= evento.ubicacion %></p>
-                        <p class="card-text"><strong>Capacidad Máxima:</strong> <%= evento.capacidad_maxima %></p>
-                        <p class="card-text"><strong>Organizador ID:</strong> <%= evento.organizador_id %></p>
-                    </div>
-                    <div class="card-footer m-1">
-                        <small class="text-muted mx-2">ID del Evento: <%= evento.id %></small>
-                        <button class="btn btn-outline-primary btn-event participante">Apuntarse</button>
-                        <button class="btn btn-outline-primary btn-event organizador">Editar</button>
-                    </div>
+<div class="container mt-2 mb-2">
+    <div class="row">
+        <!-- Columna de Filtros -->
+        <div class="col-md-3">
+            <h2 class="mb-3">Filtrar Eventos</h2>
+            <form id="filterForm" class="p-4 rounded dark-box shadow-sm">
+                <div class="mb-3">
+                    <label for="fecha" class="form-label">Fecha</label>
+                    <input type="date" class="form-control" id="fecha" name="fecha">
                 </div>
+                <div class="mb-3">
+                    <label for="tipo" class="form-label">Tipo de evento</label>
+                    <input type="text" class="form-control" id="tipo" name="tipo" placeholder="Ej: Conferencia, Taller">
+                </div>
+                <div class="mb-3">
+                    <label for="ubicacion" class="form-label">Ubicación</label>
+                    <input type="text" class="form-control" id="ubicacion" name="ubicacion" placeholder="Ej: Auditorio, Sala A">
+                </div>
+                <div class="mb-3">
+                    <label for="capacidad" class="form-label">Capacidad mínima</label>
+                    <input type="number" class="form-control" id="capacidad" name="capacidad" placeholder="Ej: 50">
+                </div>
+                <div class="d-grid gap-2">
+                    <button type="submit" class="btn btn-outline-primary">
+                        <i class="bi bi-search me-1"></i> Filtrar
+                    </button>
+                    <button type="reset" class="btn btn-outline-secondary">
+                        <i class="bi bi-x-circle me-1"></i> Limpiar
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Columna de Lista de Eventos -->
+        <div class="col-md-9">
+            <div class="container mt-5 " style="overflow-y: auto; max-height: 75vh;">
+            <h1 class="mb-4">Lista de Eventos</h1>
+            <div id="eventosContainer">
+                <% eventos.forEach(evento => { %>
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5 class="card-title"><%= evento.titulo %></h5>
+                                    <p class="card-text"><strong>Descripción:</strong> <%= evento.descripcion %></p>
+                                    <p class="card-text"><strong>Fecha:</strong> <%= new Date(evento.fecha).toLocaleDateString() %></p>
+                                    <p class="card-text"><strong>Hora:</strong> <%= evento.hora %></p>
+                                    <p class="card-text"><strong>Ubicación:</strong> <%= evento.ubicacion %></p>
+                                    <p class="card-text"><strong>Capacidad Máxima:</strong> <%= evento.capacidad_maxima %></p>
+                                    <p class="card-text"><strong>Organizador ID:</strong> <%= evento.organizador_id %></p>
+                                </div>
+                                <div class="card-footer m-1">
+                                        <small class="text-muted mx-2">ID del Evento: <%= evento.id %></small>
+                                    <% if (user.rol === 'organizador') { %>
+                                        <button class="btn btn-outline-primary btn-event organizador">Editar</button>
+                                    <% } else if (user.rol === 'participante') { %>
+                                        <button class="btn btn-outline-primary btn-event participante">Apuntarse</button>
+                                    <% } %>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                <% }) %>
             </div>
         </div>
-    <% }) %>
+        </div>
+    </div>
 </div>
 
 <script>
+    const userRole = "<%= user.rol %>";  // Pasa el rol al cliente
+
     document.addEventListener("DOMContentLoaded", function() {
-        const userRole = "<%= user.rol %>";
         const buttons = document.querySelectorAll(".btn-event");
 
         buttons.forEach(button => {
@@ -39,6 +82,62 @@
             }
         });
     });
+
+    document.getElementById('filterForm').addEventListener('submit', async function(event) {
+        event.preventDefault();
+        await filtrar();
+    });
+    async function filtrar() {
+        const fecha = document.getElementById('fecha').value;
+        const tipo = document.getElementById('tipo').value;
+        const ubicacion = document.getElementById('ubicacion').value;
+        const capacidad = document.getElementById('capacidad').value;
+        const queryParams = new URLSearchParams({ fecha, tipo, ubicacion, capacidad }).toString();
+        const response = await fetch(`/dashboard/filter?${queryParams}`);
+        const eventos = await response.json();
+        console.log(eventos);
+        renderEventos(eventos);
+    }
+
+    function renderEventos(eventos) {
+        const eventosContainer = document.getElementById('eventosContainer');
+        eventosContainer.innerHTML = ''; // Limpia la lista actual de eventos
+        eventos.forEach(evento => {
+            const eventoHTML = `
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">${evento.titulo}</h5>
+                                <p class="card-text"><strong>Descripción:</strong> ${evento.descripcion}</p>
+                                <p class="card-text"><strong>Fecha:</strong> ${new Date(evento.fecha).toLocaleDateString()}</p>
+                                <p class="card-text"><strong>Hora:</strong> ${evento.hora}</p>
+                                <p class="card-text"><strong>Ubicación:</strong> ${evento.ubicacion}</p>
+                                <p class="card-text"><strong>Capacidad Máxima:</strong> ${evento.capacidad_maxima}</p>
+                                <p class="card-text"><strong>Organizador ID:</strong> ${evento.organizador_id}</p>
+                            </div>
+                            <div class="card-footer m-1">
+                                <small class="text-muted mx-2">ID del Evento: ${evento.id}</small>
+                                ${userRole === 'organizador' ? `<button class="btn btn-outline-primary btn-event organizador">Editar</button>` : ''}
+                                ${userRole === 'participante' ? `<button class="btn btn-outline-primary btn-event participante">Apuntarse</button>` : ''}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            eventosContainer.insertAdjacentHTML('beforeend', eventoHTML);
+        });
+    }
+
+    document.getElementById('filterForm').addEventListener('reset', async function(event) {
+        event.preventDefault();
+        document.getElementById('fecha').value = '';
+        document.getElementById('tipo').value = '';
+        document.getElementById('ubicacion').value = '';
+        document.getElementById('capacidad').value = '';
+        await filtrar();
+    });
+
 </script>
 
 <%- include("partials/footer.ejs") %>
